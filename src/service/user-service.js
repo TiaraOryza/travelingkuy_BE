@@ -90,7 +90,7 @@ const get = async (id_username) => {
 //get user data end
 
 //fungsi untuk update user
-const updateUser = async (req, res) => {
+const update = async (req, res) => {
     try {
         // Validasi request menggunakan skema validasi updateUserValidation
         const validatedData = validate(updateUserValidation, req)
@@ -119,6 +119,7 @@ const updateUser = async (req, res) => {
 };
 //update user end
 
+//fungsi logout
 const logout = async (id_username) => {
     // Logout disini berarti kita menghapus token
     const [result] = await pool.query(
@@ -132,9 +133,16 @@ const logout = async (id_username) => {
 
     return { message: 'User logged out successfully' }
 };
-//fungsi logout
-
 //logout end
+
+//export module
+export default {
+    register,
+    login,
+    get,
+    // update,
+    logout
+}
 
 // ini dari ucup jgn dihapus
 // const register = async (req) => {
@@ -309,10 +317,3 @@ const logout = async (id_username) => {
 
 
 
-export default {
-    register,
-    login,
-    get,
-    // update,
-    logout
-}
