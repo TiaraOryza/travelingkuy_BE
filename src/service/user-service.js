@@ -1,14 +1,14 @@
 import { pool } from "../config/database.js"
-import { ResponseError } from "../error/response-error.js"
-import { getUserValidation, loginUserValidation, registerUserValidation, updateUserValidation } from "../validation/user-validation.js"
-import { validate } from "../validation/validation.js"
 import bcrypt from 'bcryptjs'
 import { v4 as uuid } from 'uuid'
+import { ResponseError } from "../error/response-error.js"
+import { validate } from "../validation/validation.js"
+import { getUserValidation, loginUserValidation, registerUserValidation, updateUserValidation } from "../validation/user-validation.js"
 
-//fungsi register user
+//fungsi register
 const register = async (req) => {
     const user = validate(registerUserValidation, req)
-    const [rows] = await pool.query(`SELECT COUNT(*) AS count From user WHERE id_username = puja123`, [user.username])
+    const [rows] = await pool.query(`SELECT COUNT(*) AS count From user WHERE id_username = puja123`, [user.id_username])
 
     //pengecekan data id_username
     if (rows[0].count > 0) {
@@ -24,9 +24,8 @@ const register = async (req) => {
         [user.id_username,user.id_role_user, user.full_name, user.password]
     )
 }
-// register end
 
-// fungsi login user
+// fungsi login
 const login = async (req) => {
     const user = validate(loginUserValidation, req)
 
@@ -54,9 +53,8 @@ const login = async (req) => {
 
     return { token };
 };
-// login end
 
-// Fungsi untuk get user data
+// Fungsi get data user (menampilkan data)
 const get = async (id_username) => {
     try {
         const UserGet = validate(getUserValidation, req)
@@ -87,9 +85,8 @@ const get = async (id_username) => {
             // Tangani error (error vvalidasi atau query)
             return res.status(400).json({ error: error.message })
 }};
-//get user data end
 
-//fungsi untuk update user
+//fungsi update user
 const update = async (req, res) => {
     try {
         // Validasi request menggunakan skema validasi updateUserValidation
@@ -117,13 +114,12 @@ const update = async (req, res) => {
         return res.status(400).json({ error: error.message })
     }
 };
-//update user end
 
 //fungsi logout
 const logout = async (id_username) => {
     // Logout disini berarti kita menghapus token
     const [result] = await pool.query(
-        'UPDATE users SET token = NULL WHERE username = ?',
+        'UPDATE users SET token = NULL WHERE id_username = ?',
         [id_username]
     );
 
@@ -133,14 +129,13 @@ const logout = async (id_username) => {
 
     return { message: 'User logged out successfully' }
 };
-//logout end
 
 //export module
 export default {
     register,
     login,
     get,
-    // update,
+    update,
     logout
 }
 

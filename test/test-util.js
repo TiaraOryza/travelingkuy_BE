@@ -3,13 +3,13 @@ import bcrypt from 'bcryptjs'
 
 // Buat data User
 export const removeUserTest = async () => {
-    await pool.query(`DELETE FROM users WHERE username = 'test'`);
+    await pool.query(`DELETE FROM users WHERE id_username = 'test'`);
 };
 
 export const createUserTest = async () => {
     const hashedPassword = await bcrypt.hash('rahasia', 10);
-    await pool.query(`INSERT INTO users (username, full_name, password, email, phone, token) VALUES (?, ?, ?, ?, ?, ?)`, 
-    ['test', 'test', hashedPassword, 'test@gmail.com', '089678767443', 'test']);
+    await pool.query(`INSERT INTO users (id_username, full_name, password, email, phone, token) VALUES (?, ?, ?, ?, ?, ?)`, 
+    ['tiara', 'tiara oryza sativa', hashedPassword, 'tiara@gmail.com', '085884615315', 'tiara']);
 };
 
 // Buat data kota

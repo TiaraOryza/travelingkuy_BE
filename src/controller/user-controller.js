@@ -35,9 +35,8 @@ const login = async (req, res, next)=>{
 
 const get = async (req, res, next)=>{
     try {
-        const username = req.user.username
-
-        const result = await userService.get(username)
+        const id_username = req.user.id_username
+        const result = await userService.get(id_username)
         res.status(200).json({
             data : result
         })
@@ -48,11 +47,11 @@ const get = async (req, res, next)=>{
 
 const update = async(req, res, next)=>{
     try {
-        const user = req.user.username
-        const request = req.body
-        request.username = user
+        const user = req.user.id_username
+        // const request = req.body
+        // request.id_username = user
 
-        const result = await userService.update(request)
+        const result = await userService.update(req.body.id_username)
         res.status(200).json({
             data : result
         })
@@ -64,7 +63,7 @@ const update = async(req, res, next)=>{
 
 const logout = async (req, res, next)=>{
     try {
-        const result = await userService.logout(req.user.username)
+        const result = await userService.logout(req.user.id_username)
         res.status(200).json({
             data : result
         })
