@@ -10,7 +10,6 @@ const succses = (req, res, next)=>{
     }
 }
 
-
 const register = async (req, res, next)=>{
     try {
         const result = await userService.register(req.body)

@@ -8,7 +8,7 @@ import { getUserValidation, loginUserValidation, registerUserValidation, updateU
 //fungsi register
 const register = async (req) => {
     const user = validate(registerUserValidation, req)
-    const [rows] = await pool.query(`SELECT COUNT(*) AS count From user WHERE id_username = puja123`, [user.id_username])
+    const [rows] = await pool.query(`SELECT COUNT(*) AS count From user WHERE id_username = ?`, [user.id_username])
 
     //pengecekan data id_username
     if (rows[0].count > 0) {
@@ -20,9 +20,11 @@ const register = async (req) => {
 
     //masukin data ke database user 
     const result = await pool.query(
-        `INSERT INTO user (id_username, id_role_user, full_name, password) VALUES (?, ?, ?, ?)`,
-        [user.id_username,user.id_role_user, user.full_name, user.password]
+        `INSERT INTO user (id_username, full_name, password) VALUES (?, ?, ?)`,
+        [user.id_username, user.full_name, user.password]
     )
+
+    return {result}
 }
 
 // fungsi login
@@ -73,7 +75,7 @@ const get = async (id_username) => {
         const user = rows[0];
         return res.status(200).json({
             id_username: user.id_username,
-            id_gender: user.id_gender,
+            gender: user.gender,
             full_name: user.full_name,
             date_birth: user.date_birth,
             email: user.email,
