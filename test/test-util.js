@@ -3,76 +3,76 @@ import bcrypt from 'bcryptjs'
 
 // Buat data User
 export const removeUserTest = async () => {
-    await pool.query(`DELETE FROM users WHERE id_username = 'test'`);
+    await pool.query(`DELETE FROM user WHERE id_username = 'test'`);
 };
 
 export const createUserTest = async () => {
     const hashedPassword = await bcrypt.hash('rahasia', 10);
-    await pool.query(`INSERT INTO users (id_username, full_name, password, email, phone, token) VALUES (?, ?, ?, ?, ?, ?)`, 
-    ['tiara', 'tiara oryza sativa', hashedPassword, 'tiara@gmail.com', '085884615315', 'tiara']);
+    await pool.query(`INSERT INTO user (id_username, full_name, password) VALUESd  ( ?, ?, ?)`, 
+    ['tiara456', 'tiara oryza sativa', hashedPassword]);
 };
 
-// Buat data kota
-export const removeKotaTest = async () => {
-    await pool.query(`DELETE FROM kota WHERE nm_kota = 'test'`);
-};
+// // Buat data kota
+// export const removeKotaTest = async () => {
+//     await pool.query(`DELETE FROM country WHERE nm_kota = 'test'`);
+// };
 
-export const createKotaTest = async () => {
-    await pool.query(`INSERT INTO kota (nm_kota, about, country) VALUES (?, ?, ?)`, ['test', 'test', 'test']);
-};
+// export const createKotaTest = async () => {
+//     await pool.query(`INSERT INTO kota (nm_kota, about, country) VALUES (?, ?, ?)`, ['test', 'test', 'test']);
+// };
 
-export const getKotaTest = async () => {
-    const [rows] = await pool.query(`SELECT * FROM kota WHERE id_admin = ?`, ['admin']);
-    return rows[0];
-};
+// export const getKotaTest = async () => {
+//     const [rows] = await pool.query(`SELECT * FROM kota WHERE id_admin = ?`, ['admin']);
+//     return rows[0];
+// };
 
-// Create data destination
-export const removeDestinationTest = async () => {
-    await pool.query(`DELETE FROM destination WHERE nm_kota = 'test'`);
-};
+// // Create data destination
+// export const removeDestinationTest = async () => {
+//     await pool.query(`DELETE FROM destination WHERE nm_kota = 'test'`);
+// };
 
-export const createDestinationTest = async () => {
-    await pool.query(`INSERT INTO destination (nm_destination, about, nm_kota) VALUES (?, ?, ?)`, ['test', 'test', 'test']);
-};
+// export const createDestinationTest = async () => {
+//     await pool.query(`INSERT INTO destination (nm_destination, about, nm_kota) VALUES (?, ?, ?)`, ['test', 'test', 'test']);
+// };
 
-export const getDestinationTest = async () => {
-    const [rows] = await pool.query(`SELECT * FROM destination WHERE nm_kota = ?`, ['test']);
-    return rows[0];
-};
+// export const getDestinationTest = async () => {
+//     const [rows] = await pool.query(`SELECT * FROM destination WHERE nm_kota = ?`, ['test']);
+//     return rows[0];
+// };
 
-// Create data hotel
-export const removeHotelTest = async () => {
-    const destination = await getDestinationTest();
-    await pool.query(`DELETE FROM hotel WHERE id_destination = ?`, [destination.id]);
-};
+// // Create data hotel
+// export const removeHotelTest = async () => {
+//     const destination = await getDestinationTest();
+//     await pool.query(`DELETE FROM hotel WHERE id_destination = ?`, [destination.id]);
+// };
 
-export const createHotelTest = async () => {
-    const destination = await getDestinationTest();
-    await pool.query(`INSERT INTO hotel (nm_hotel, about, alamat, price, id_destination) VALUES (?, ?, ?, ?, ?)`, 
-    ['test', 'test', 'test', 'test', destination.id]);
-};
+// export const createHotelTest = async () => {
+//     const destination = await getDestinationTest();
+//     await pool.query(`INSERT INTO hotel (nm_hotel, about, alamat, price, id_destination) VALUES (?, ?, ?, ?, ?)`, 
+//     ['test', 'test', 'test', 'test', destination.id]);
+// };
 
-export const getHotelTest = async () => {
-    const destination = await getDestinationTest();
-    const [rows] = await pool.query(`SELECT * FROM hotel WHERE id_destination = ?`, [destination.id]);
-    return rows[0];
-};
+// export const getHotelTest = async () => {
+//     const destination = await getDestinationTest();
+//     const [rows] = await pool.query(`SELECT * FROM hotel WHERE id_destination = ?`, [destination.id]);
+//     return rows[0];
+// };
 
-// Create booking
-export const removeBookingTest = async () => {
-    await pool.query(`DELETE FROM booking WHERE username = 'test'`);
-};
+// // Create booking
+// export const removeBookingTest = async () => {
+//     await pool.query(`DELETE FROM booking WHERE username = 'test'`);
+// };
 
-export const createBookingTest = async () => {
-    const hotel = await getHotelTest();
-    await pool.query(`INSERT INTO booking (check_in, check_out, price, username, id_hotel) VALUES (?, ?, ?, ?, ?)`, 
-    [new Date('2024-07-07'), new Date('2024-07-08'), '8900', 'test', hotel.id]);
-};
+// export const createBookingTest = async () => {
+//     const hotel = await getHotelTest();
+//     await pool.query(`INSERT INTO booking (check_in, check_out, price, username, id_hotel) VALUES (?, ?, ?, ?, ?)`, 
+//     [new Date('2024-07-07'), new Date('2024-07-08'), '8900', 'test', hotel.id]);
+// };
 
-export const getBookingTest = async () => {
-    const [rows] = await pool.query(`SELECT * FROM booking WHERE username = 'test'`);
-    return rows[0];
-};
+// export const getBookingTest = async () => {
+//     const [rows] = await pool.query(`SELECT * FROM booking WHERE username = 'test'`);
+//     return rows[0];
+// };
 
 
 

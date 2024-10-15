@@ -1,49 +1,50 @@
-// import { web } from "../src/application/web.js"
-// import { createUserTest, removeUserTest } from "./test-util.js"
-// import supertest from 'supertest'
+import { web } from "../src/application/web.js"
+import { createUserTest, removeUserTest } from "./test-util.js"
+import supertest from 'supertest'
 
-// describe('POST /users', ()=>{
-//     afterEach(async ()=>{
-//         await removeUserTest()
-//     })
+describe('POST /users', ()=>{
+    afterEach(async ()=>{
+        await removeUserTest()
+    })
 
-//     it('should can register user', async ()=>{
-//         const result = await supertest(web)
-//             .post('/users')
-//             .send({
-//                 username : 'test',
-//                 full_name : 'test',
-//                 password : 'rahasia',
-//                 email :'test@gmail.com',
-//                 phone : '089678767443'
-//             })
+    it('should can register user', async ()=>{
+        const result = await supertest(web)
+            .post('/users')
+            .send({
+                id_username : 'test',
+                full_name : 'test',
+                password : 'rahasia',
+                // email :'test@gmail.com',
+                // phone : '089678767443'
+            })
 
-//             console.log(result.body)
-//             expect(result.status).toBe(200)
-//             expect(result.body.data.username).toBe('test')
-//             expect(result.body.data.full_name).toBe('test')
+            console.log(result.body)
+            expect(result.status).toBe(200)
+            expect(result.body.data.id_username).toBe('test')
+            expect(result.body.data.full_name).toBe('test')
 
-//     })
+    })
 
-//     it('should can reject if register is invalid', async ()=>{
-//         const result = await supertest(web)
-//             .post('/users')
-//             .send({
-//                 username : 'test',
-//                 full_name : '',
-//                 password : '',
-//                 email :'',
-//                 phone : ''
-//             })
+    it('should can reject if register is invalid', async ()=>{
+        const result = await supertest(web)
+            .post('/users')
+            .send({
+                id_username : 'test',
+                full_name : '',
+                password : '',
+                // email :'',
+                // phone : ''
+            })
 
-//             console.info(result.body)
-//             expect(result.status).toBe(400)
-//             expect(result.error).toBeDefined()
+            console.info(result.body)
+            expect(result.status).toBe(400)
+            
+            expect(result.error).toBeDefined()
 
-//     })
+    })
 
 
-// })
+})
 
 // describe('POST /users/login',()=>{
 //     beforeEach(async()=>{

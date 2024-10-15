@@ -37,6 +37,8 @@ const login = async (req) => {
     );
     const findUser = rows[0]
 
+    
+
     if (!findUser) {
         throw new ResponseError(401, 'Username is wrong')
     }
