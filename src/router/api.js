@@ -8,8 +8,8 @@ userRouter.use(authMiddleware)
 
 //api users
 userRouter.get('/users/current', userController.get)
-// userRouter.patch('/users/current', userController.update)
-// userRouter.delete('/users/current/logout', userController.logout)
+userRouter.patch('/users/current', userController.update)
+userRouter.delete('/users/current/logout', userController.logout)
 
 // api booking
 // userRouter.post('/users/hotel/:hotel/booking', bookingController.create)

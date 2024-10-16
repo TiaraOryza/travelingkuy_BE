@@ -27,14 +27,14 @@ const getUserValidation = Joi.object({
 })
 
 const updateUserValidation  = Joi.object({
-    id_username : Joi.string().max(100).required(),
+    id_username : Joi.string().max(100).optional(),
+    gender: Joi.string().max(10).optional(),
     full_name : Joi.string().max(100).optional(),
+    date_birth : Joi.string().max(100).optional(),
     password : Joi.string().max(100).optional(),
     email : Joi.string().email().max(100).optional(),
     phone : Joi.string().max(100).optional(),
-    gender : Joi.string().max(100).required(),
-    date_birth : Joi.string().max(100).required(),
-    alamat : Joi.string().max(100).required(),
+    address : Joi.string().max(100).optional(),
     // ktp : Joi.string().max(100).required(),
     // kode_pos : Joi.string().max(100).required(),
 })

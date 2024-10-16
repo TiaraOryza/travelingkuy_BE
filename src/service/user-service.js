@@ -99,44 +99,6 @@ const get = async (id_username) => {
     };
 };
 
-// const get = async (req) => {
-//     try {
-//         //validasi data
-//         const ValidatedUsername = validate(getUserValidation, req.params.id_username)
-        
-//         //query mengambil data berdasarkan id
-//         const [rows] = await pool.query(
-//             'SELECT * FROM user WHERE id_username = ?',
-//             [ValidatedUsername]
-//         )
-
-//         if (rows.length === 0) {
-//             throw new ResponseError(404, 'User not found')
-//         }
-
-//         const user = rows[0]
-
-//         const validatedUserData = validate(userValidationSchema, {
-//             // id_username: user.id_username,
-//             id_role_user: user.id_role_user,
-//             id_booking: user.id_booking,
-//             gender: user.gender,
-//             full_name: user.full_name,
-//             date_birth: user.date_birth,
-//             email: user.email,
-//             phone: user.phone,
-//             address: user.address,
-//             token: user.token
-//         });
-
-//         return validatedUserData
-
-//         } catch (error) {
-//             // Tangani error (error vaalidasi atau query)
-//             throw new ResponseError(402, 'Sorry, There is a Problem')
-//     }
-// };
-
 //fungsi update user
 const update = async (req, res) => {
     try {
@@ -144,33 +106,37 @@ const update = async (req, res) => {
         const validatedData = validate(updateUserValidation, req)
 
         // Destructuring data hasil validasi
-        const { id_username, id_gender, full_name, date_birth, email, phone, address } = validatedData
+        const { id_username, gender, full_name, password, date_birth, email, phone, address } = validatedData
 
         // Query untuk update user berdasarkan id_username
         const [result] = await pool.query(
-            'UPDATE users SET id_gender = ?, full_name = ?, date_birth = ?, email = ?, phone = ?, address = ? WHERE id_username = ?',
-            [id_gender, full_name, date_birth, email, phone, address, id_username] 
+            'UPDATE user SET gender = ?, full_name = ?, password = ?, date_birth = ?, email = ?, phone = ?, address = ? WHERE id_username = ?',
+            [gender, full_name, password, date_birth, email, phone, address, id_username] 
         );
+
+        console.log(result);  // Tambahkan log hasil query
 
         // Jika tidak ada data, user tidak ditemukan
         if (result.affectedRows === 0) {
             throw new ResponseError(404, 'User not found')
         }
 
-        // Mengembalikan pesan sukses
-        return res.status(200).json({ message: 'User updated successfully' })
+        return {result}
 
     } catch (error) {
         // Tangani error (misal, error dari validasi atau query database)
-        return res.status(400).json({ error: error.message })
+        console.error("Error: ", error.message);
+        throw new Error('internal server error');
     }
+
+    // return { result }
 };
 
 //fungsi logout
 const logout = async (id_username) => {
     // Logout disini berarti kita menghapus token
     const [result] = await pool.query(
-        'UPDATE users SET token = NULL WHERE id_username = ?',
+        'UPDATE user SET token = NULL WHERE id_username = ?',
         [id_username]
     );
 
