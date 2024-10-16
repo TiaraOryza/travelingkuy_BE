@@ -24,8 +24,10 @@ const register = async (req, res, next)=>{
 const login = async (req, res, next)=>{
     try {
         const result = await userService.login(req.body)
+        //kirim response sukses
         res.status(200).json({
-            data : result
+            message: 'Login successful',
+            token : result.token
         })
     } catch (error) {
         next(error)

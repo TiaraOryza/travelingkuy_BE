@@ -7,10 +7,10 @@ import { getUserValidation, loginUserValidation, registerUserValidation, updateU
 
 //fungsi register
 const register = async (req) => {
+    //pengecekan data id_username
     const user = validate(registerUserValidation, req)
     const [rows] = await pool.query(`SELECT COUNT(*) AS count From user WHERE id_username = ?`, [user.id_username])
 
-    //pengecekan data id_username
     if (rows[0].count > 0) {
         throw new ResponseError(400, 'User already exists')
     }
@@ -20,8 +20,8 @@ const register = async (req) => {
 
     //masukin data ke database user 
     const result = await pool.query(
-        `INSERT INTO user (id_username, full_name, password) VALUES (?, ?, ?)`,
-        [user.id_username, user.full_name, user.password]
+        `INSERT INTO user (id_username, full_name, password, email, phone) VALUES (?, ?, ?, ?, ?)`,
+        [user.id_username, user.full_name, user.password, user.email, user.phone]
     )
 
     return {result}
@@ -33,16 +33,18 @@ const login = async (req) => {
 
     const [rows] = await pool.query(
         'SELECT * FROM user WHERE id_username = ?', 
-        [user.id_username]
+        [user.id_username] 
     );
     const findUser = rows[0]
 
-    
-
+    //pesan username salah
     if (!findUser) {
         throw new ResponseError(401, 'Username is wrong')
+    } else {
+        console.log('User found:', rows); 
     }
 
+    //pesan password salah
     const passwordValid = await bcrypt.compare(user.password, findUser.password)
     if (!passwordValid) {
         throw new ResponseError(401, 'Password is wrong')
@@ -50,45 +52,90 @@ const login = async (req) => {
 
     const token = uuid().toString()
 
-    await pool.query(
+    const [updateResult] = await pool.query(
         'UPDATE user SET token = ? WHERE id_username = ?',
         [token, user.id_username]
     );
 
+    //pesan update token gagal
+    if (updateResult.affectedRows === 0) {
+        throw new Error('Failed to update token');
+    }
+
+     // hasil
     return { token };
 };
 
 // Fungsi get data user (menampilkan data)
+
+// Fungsi get data user (menampilkan data)
 const get = async (id_username) => {
-    try {
-        const UserGet = validate(getUserValidation, req)
+    // Validasi data
+    let GetUser = validate(getUserValidation, { id_username });
+    
+    // Query ke database
+    const [rows] = await pool.query(
+        'SELECT * FROM user WHERE id_username = ?',
+        [id_username]
+    );
 
-        const {id_username} = UserGet
+    // Jika user tidak ditemukan
+    if (rows.length === 0) {
+        throw new ResponseError(404, 'User not found');
+    }
+
+    // Kembalikan data user tanpa password
+    GetUser = rows[0];
+    return {
+        id_username: GetUser.id_username,
+        id_role_user: GetUser.id_role_user,
+        id_booking: GetUser.id_booking,
+        gender: GetUser.gender,
+        full_name: GetUser.full_name,
+        date_birth: GetUser.date_birth,
+        email: GetUser.email,
+        phone: GetUser.phone,
+        address: GetUser.address
+    };
+};
+
+// const get = async (req) => {
+//     try {
+//         //validasi data
+//         const ValidatedUsername = validate(getUserValidation, req.params.id_username)
         
-        const [rows] = await pool.query(
-            'SELECT * FROM users WHERE id_username = ?',
-            [id_username]
-        )
+//         //query mengambil data berdasarkan id
+//         const [rows] = await pool.query(
+//             'SELECT * FROM user WHERE id_username = ?',
+//             [ValidatedUsername]
+//         )
 
-        if (rows.length === 0) {
-            throw new ResponseError(404, 'User not found')
-        }
+//         if (rows.length === 0) {
+//             throw new ResponseError(404, 'User not found')
+//         }
 
-        const user = rows[0];
-        return res.status(200).json({
-            id_username: user.id_username,
-            gender: user.gender,
-            full_name: user.full_name,
-            date_birth: user.date_birth,
-            email: user.email,
-            phone: user.phone,
-            address: user.address
+//         const user = rows[0]
 
-        })
-        } catch (error) {
-            // Tangani error (error vvalidasi atau query)
-            return res.status(400).json({ error: error.message })
-}};
+//         const validatedUserData = validate(userValidationSchema, {
+//             // id_username: user.id_username,
+//             id_role_user: user.id_role_user,
+//             id_booking: user.id_booking,
+//             gender: user.gender,
+//             full_name: user.full_name,
+//             date_birth: user.date_birth,
+//             email: user.email,
+//             phone: user.phone,
+//             address: user.address,
+//             token: user.token
+//         });
+
+//         return validatedUserData
+
+//         } catch (error) {
+//             // Tangani error (error vaalidasi atau query)
+//             throw new ResponseError(402, 'Sorry, There is a Problem')
+//     }
+// };
 
 //fungsi update user
 const update = async (req, res) => {
@@ -142,177 +189,3 @@ export default {
     update,
     logout
 }
-
-// ini dari ucup jgn dihapus
-// const register = async (req) => {
-//     const user = validate(registerUserValidation, req)
-
-//     const countUser = await pool.user.count({
-//         where: {
-//             username: user.username
-//         }
-//     })
-
-//     if (countUser === 1) {
-//         throw new ResponseError(400, 'user already exists')
-
-//     }
-
-//     user.password = await bcrypt.hash(user.password, 10)
-
-//     return prisma.user.create({
-//         data: user,
-//         select: {
-//             username: true,
-//             full_name: true,
-//             email: true,
-//             phone: true
-//         }
-//     })
-// }
-
-// const login = async (req) => {
-//     const user = validate(loginUserValidation, req)
-
-//     const findUser = await prisma.user.findUnique({
-//         where: {
-//             username: user.username
-//         }
-//     })
-
-//     if (!findUser) {
-//         throw new ResponseError(401, 'username or password wrong')
-
-//     }
-
-//     const passwordValid = await bcrypt.compare(user.password, findUser.password)
-//     if (!passwordValid) {
-//         throw new ResponseError(401, 'username or password wrong')
-//     }
-
-//     const token = uuid().toString()
-
-//     return prisma.user.update({
-//         where: {
-//             username: findUser.username
-//         },
-//         data: {
-//             token: token
-//         },
-//         select: {
-//             token: true
-//         }
-//     })
-
-// }
-
-// const get = async (username) => {
-//     username = validate(getUserValidation, username)
-
-//     const findUSer = await prisma.user.findUnique({
-//         where: {
-//             username: username
-//         },
-//         select: {
-//             username: true,
-//             full_name: true,
-//             email: true,
-//             phone: true
-//         }
-//     })
-
-//     if (!findUSer) {
-//         throw new ResponseError(404, 'user is not found')
-
-//     }
-
-//     return findUSer
-
-// }
-
-// const update = async (req) => {
-//     const user = validate(updateUserValidation, req)
-
-//     const countUser = await prisma.user.count({
-//         where: {
-//             username: user.username
-//         }
-//     })
-
-//     if (countUser !== 1) {
-//         throw new ResponseError(404, 'user is not found')
-
-//     }
-
-//     const data = {
-//         full_name: user.full_name,
-//         email: user.email,
-//         phone: user.phone,
-//         jkel: user.jkel,
-//         tgl_lahir: user.tgl_lahir,
-//         alamat: user.alamat,
-//         ktp: user.ktp,
-//         kode_pos: user.kode_pos
-//     }
-
-//     if (user.password) {
-//         data.password = await bcrypt.hash(user.password, 10);
-//     }
-
-//     return prisma.user.update({
-//         where: {
-//             username: user.username
-//         },
-//         data: {
-//             full_name: user.full_name,
-//             email: user.email,
-//             phone: user.phone,
-//             jkel: user.jkel,
-//             tgl_lahir: user.tgl_lahir,
-//             alamat: user.alamat,
-//             ktp: user.ktp,
-//             kode_pos: user.kode_pos
-//         },
-//         select: {
-//             full_name: true,
-//             email: true,
-//             phone: true,
-//             jkel: true,
-//             tgl_lahir: true,
-//             alamat: true,
-//             ktp: true,
-//             kode_pos: true
-
-//         }
-//     })
-// }
-
-// const logout = async (username) => {
-//     username = validate(getUserValidation, username)
-
-//     const countUser = await prisma.user.count({
-//         where: {
-//             username: username
-//         }
-//     })
-
-//     if (countUser !== 1) {
-//         throw new ResponseError(404, 'user is not found')
-//     }
-
-//     return prisma.user.update({
-//         where: {
-//             username: username
-//         },
-//         data: {
-//             token: null
-//         },
-//         select: {
-//             username: true
-//         }
-//     })
-// }
-
-
-
-
