@@ -31,7 +31,7 @@ const get = async (req, res , next)=>{
 
 const update = async(req ,res, next)=>{
     try {
-        const country = req.country.id_country
+        const country = req.params.id_country
         const request = req.body
         request.id_country = country
 
@@ -46,9 +46,9 @@ const update = async(req ,res, next)=>{
 
 const remove = async (req, res, next)=>{
     try {
-        const id_country = req.country.id_country
+        const id_country = req.params.id_country
 
-        await kotaService.remove(id_country)
+        await countryService.remove(id_country)
         res.status(200).json({
             message : 'Data delete succesfully',
             data : 'ok'

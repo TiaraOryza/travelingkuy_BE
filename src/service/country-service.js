@@ -45,9 +45,6 @@ const get = async(id_country) => {
         throw new ResponseError(404, 'Country Not Found')
     }
 
-    //return rows[0]
-    // console.log('Country ditemukan:', rows[0]); // Logging setelah query
-    // return rows[0];
     GetCountry = rows[0]
 
     return {
@@ -58,21 +55,23 @@ const get = async(id_country) => {
 }
 
 //FUNGSI UPDATE DATA COUNTRY
-const update = async (req, res) => {
+const update = async (req) => {
     try {
         // validasi data
         const validatedData = validate(updateCountryValidation, req)
+        // Logging hasil validasi
+        console.log("Data setelah validasi:", validatedData);
 
         //destucturing data hasil validasi
         const { id_country, country_name, about } = validatedData
 
         //query untuk update country
         const [result] = await pool.query(
-            `UPDATE country SET country = ?, about = ? WHERE id_country = ?`, 
+            `UPDATE country SET country_name = ?, about = ? WHERE id_country = ?`, 
             [country_name, about, id_country]
         )
 
-        console.log(result)
+        console.log("Hasil query update:", result);
 
         if(result.affectedRows === 0){
             throw new ResponseError(404, 'User not found')
@@ -87,9 +86,39 @@ const update = async (req, res) => {
     }
 }
 
+const remove = async (id_country) => {
+    try {
+        // Validasi id_country
+        const validatedIdCountry = validate(getCountryValidation, { id_country });
+
+        // Cek apakah country ada
+        const [countryRows] = await pool.query(
+            `SELECT id_country FROM country WHERE id_country = ?`, 
+            [validatedIdCountry.id_country]
+        );
+
+        if (countryRows.length === 0) {
+            throw new ResponseError(404, 'Country is not found');
+        }
+
+        // Delete country
+        const [deleteResult] = await pool.query(
+            `DELETE FROM country WHERE id_country = ?`, 
+            [validatedIdCountry.id_country]
+        );
+
+        return deleteResult;
+    } catch (error) {
+        console.error('Error:', error.message);
+        throw new ResponseError(500, 'Internal server error');
+    }
+};
+
+
 //export module
 export default {
     create,
     get,
-    update
+    update,
+    remove
 }

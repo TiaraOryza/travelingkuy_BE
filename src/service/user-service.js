@@ -100,7 +100,7 @@ const get = async (id_username) => {
 }
 
 //fungsi update user
-const update = async (req, res) => {
+const update = async (req) => {
     try {
         // Validasi data
         const validatedData = validate(updateUserValidation, req)
