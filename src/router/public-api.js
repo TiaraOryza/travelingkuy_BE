@@ -1,6 +1,6 @@
 import express from 'express'
 import userController from '../controller/user-controller.js'
-// import kotaController from '../controller/kota-controller.js'
+import CountryController from '../controller/country-controller.js'
 // import destinationController from '../controller/destination-controller.js'
 // import hotelController from '../controller/hotel-controller.js'
 
@@ -13,11 +13,11 @@ publicRouter.post('/users', userController.register)
 publicRouter.post('/users/login', userController.login)
 
 
-//api kota
-// publicRouter.post('/kota', kotaController.create)
-// publicRouter.get('/kota/:kota', kotaController.get)
-// publicRouter.put('/kota/:kota', kotaController.update)
-// publicRouter.delete('/kota/:kota', kotaController.remove)
+//api Country
+publicRouter.post('/country', CountryController.create)
+publicRouter.get('/country/:id_country', CountryController.get)
+publicRouter.put('/country/:id_country', CountryController.update)
+publicRouter.delete('/country/:id_country', CountryController.remove)
 
 // //api destination
 // publicRouter.post('/kota/:kota/destination', destinationController.create)

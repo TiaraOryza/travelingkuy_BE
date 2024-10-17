@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import { pool } from '../config/database.js'
-// import { errorMiddleware } from '../middleware/error-middleware.js'
+//import { errorMiddleware } from '../middleware/error-middleware.js'
 import { publicRouter } from '../router/public-api.js'
 import { userRouter } from '../router/api.js'
 

@@ -1,61 +1,66 @@
-// import kotaService from "../service/kota-service.js"
+import countryService from "../service/country-service.js"
 
-// const create = async (req, res, next)=>{
-//     try {
-//         const request = req.body
-//         const result = await kotaService.create(request)
-//         res.status(200).json({
-//             data : result
-//         })
-//     } catch (error) {
-//         next(error)
-//     }
-// }
+const create = async (req, res, next)=>{
+    try {
+        const request = req.body
+        const result = await countryService.create(request)
+        res.status(200).json({
+            message : 'Create data successfull',
+            data : result
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
-// const get = async (req, res ,next)=>{
-//     try {
-//         const nm_kota = req.params.kota
-//         const result = await kotaService.get(nm_kota)
-//         res.status(200).json({
-//             data: result
-//         })
+const get = async (req, res , next)=>{
+    try {
+        const id_country = req.params.id_country
+        console.log('id_country dari URL:', id_country)
 
-//     } catch (error) {
-//         next(error)
-//     }
-// }
+        const result = await countryService.get(id_country)
+        res.status(200).json({
+            message : 'data ini adalah data country',
+            data: result
+        })
 
-// const update = async(req ,res, next)=>{
-//     try {
-//         const nm_kota = req.params.kota
-//         const request = req.body
-//         request.nm_kota = nm_kota
+    } catch (error) {
+        next(error)
+    }
+}
 
-//         const result = await kotaService.update(request)
-//         res.status(200).json({
-//             data : result
-//         })
-//     } catch (error) {
-//         next(error)
-//     }
-// }
+const update = async(req ,res, next)=>{
+    try {
+        const country = req.country.id_country
+        const request = req.body
+        request.id_country = country
 
-// const remove = async (req, res, next)=>{
-//     try {
-//         const nm_kota = req.params.kota
+        const result = await countryService.update(request)
+        res.status(200).json({
+            data : result
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
-//         await kotaService.remove(nm_kota)
-//         res.status(200).json({
-//             data : 'ok'
-//         })
-//     } catch (error) {
-//         next(error)
-//     }
-// }
+const remove = async (req, res, next)=>{
+    try {
+        const id_country = req.country.id_country
 
-// export default{
-//     create,
-//     get,
-//     update,
-//     remove
-// }
+        await kotaService.remove(id_country)
+        res.status(200).json({
+            message : 'Data delete succesfully',
+            data : 'ok'
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+export default{
+    create,
+    get,
+    update,
+    remove
+}

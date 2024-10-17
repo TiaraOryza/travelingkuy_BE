@@ -7,7 +7,11 @@ const createCountryValidation = Joi.object({
     
 })
 
-const getCountryValidation = Joi.string().max(100).required()
+const getCountryValidation = Joi.object({
+    id_country : Joi.string().max(100).optional(),
+    country_name : Joi.string().max(100).optional(),
+    about : Joi.string().max(100).optional()
+})
 
 
 const updateCountryValidation = Joi.object({

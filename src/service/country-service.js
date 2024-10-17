@@ -1,8 +1,7 @@
 
 import { pool } from "../config/database.js"
 import { ResponseError } from "../error/response-error.js"
-import { createCountryValidation, getCountryValidation, updateCountryaValidation } from "../validation/country-validation.js"
-import { getUserValidation } from "../validation/user-validation.js"
+import { createCountryValidation, getCountryValidation,  updateCountryValidation } from "../validation/country-validation.js"
 import { validate } from "../validation/validation.js"
 
 //FUNGSI CREAT DATA COUNTRY
@@ -18,7 +17,7 @@ const create = async(req) => {
 
     //Fungsi Masukan Data Ke DB Country
     const result = await pool.query(
-        `INSERT INTO country (id_country, country_name, about) VALUES (?,?,?),`, 
+        `INSERT INTO country (id_country, country_name, about) VALUES (?,?,?)`, 
         [country.id_country, country.country_name, country.about]
         )
     
@@ -28,31 +27,69 @@ const create = async(req) => {
 
 //FUNGSI PENGAMBILAN DATA COUNTRY
 const get = async(id_country) => {
-    //Fungsi get data country
-    try{
-        const CountryGet = validate(getUserValidation, req)
-        
-        const [id_country] = CountryGet
-        
-        const [rows] = await pool.query(
-            `SELECT * FROM country WHERE id_country = ?`,
-            [id_country]
+    //cek id dari url
+    console.log('Mencari country dengan id:', id_country);
+
+    //validasi data
+    let GetCountry = validate(getCountryValidation, {id_country})
+    
+    const [rows] = await pool.query(
+         `SELECT * FROM country WHERE id_country = ?`,
+        [id_country]
+    )
+
+    console.log('Hasil query:', rows);
+
+    //error handler
+    if (rows.length === 0){
+        throw new ResponseError(404, 'Country Not Found')
+    }
+
+    //return rows[0]
+    // console.log('Country ditemukan:', rows[0]); // Logging setelah query
+    // return rows[0];
+    GetCountry = rows[0]
+
+    return {
+    id_country: GetCountry.id_country,
+    country_name: GetCountry.country_name,
+    about: GetCountry.about
+    }
+}
+
+//FUNGSI UPDATE DATA COUNTRY
+const update = async (req, res) => {
+    try {
+        // validasi data
+        const validatedData = validate(updateCountryValidation, req)
+
+        //destucturing data hasil validasi
+        const { id_country, country_name, about } = validatedData
+
+        //query untuk update country
+        const [result] = await pool.query(
+            `UPDATE country SET country = ?, about = ? WHERE id_country = ?`, 
+            [country_name, about, id_country]
         )
 
-        //error handler
-        if (rows.length === 0){
-            throw new ResponseError(400, 'Country Not Found')
+        console.log(result)
+
+        if(result.affectedRows === 0){
+            throw new ResponseError(404, 'User not found')
         }
 
-        const country = rows[0]
-        return resizeBy.status(200).json({
-            id_country: country.id_country,
-            country_name: country.country_name,
-            about: country.about
-        })
+        return {result}
 
-    } //error handler
-        catch (error) {
-            return res.status(4000).json({error: error.message})
-        }
+    } catch (error) {
+        // error handling lainnya
+        console.log("Error: ", error.mesaage)
+        throw new ResponseError('internal server error')
+    }
+}
+
+//export module
+export default {
+    create,
+    get,
+    update
 }

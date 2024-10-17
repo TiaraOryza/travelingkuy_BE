@@ -11,6 +11,7 @@ const register = async (req) => {
     const user = validate(registerUserValidation, req)
     const [rows] = await pool.query(`SELECT COUNT(*) AS count From user WHERE id_username = ?`, [user.id_username])
 
+    //error handler
     if (rows[0].count > 0) {
         throw new ResponseError(400, 'User already exists')
     }
@@ -24,6 +25,7 @@ const register = async (req) => {
         [user.id_username, user.full_name, user.password, user.email, user.phone]
     )
 
+    //hasil
     return {result}
 }
 
@@ -41,7 +43,7 @@ const login = async (req) => {
     if (!findUser) {
         throw new ResponseError(401, 'Username is wrong')
     } else {
-        console.log('User found:', rows); 
+        console.log('User found:', rows)
     }
 
     //pesan password salah
@@ -59,7 +61,7 @@ const login = async (req) => {
 
     //pesan update token gagal
     if (updateResult.affectedRows === 0) {
-        throw new Error('Failed to update token');
+        throw new Error('Failed to update token')
     }
 
      // hasil
@@ -67,25 +69,23 @@ const login = async (req) => {
 };
 
 // Fungsi get data user (menampilkan data)
-
-// Fungsi get data user (menampilkan data)
 const get = async (id_username) => {
     // Validasi data
-    let GetUser = validate(getUserValidation, { id_username });
+    let GetUser = validate(getUserValidation, { id_username })
     
     // Query ke database
     const [rows] = await pool.query(
         'SELECT * FROM user WHERE id_username = ?',
         [id_username]
-    );
+    )
 
     // Jika user tidak ditemukan
     if (rows.length === 0) {
-        throw new ResponseError(404, 'User not found');
+        throw new ResponseError(404, 'User not found')
     }
 
     // Kembalikan data user tanpa password
-    GetUser = rows[0];
+    GetUser = rows[0]
     return {
         id_username: GetUser.id_username,
         id_role_user: GetUser.id_role_user,
@@ -96,13 +96,13 @@ const get = async (id_username) => {
         email: GetUser.email,
         phone: GetUser.phone,
         address: GetUser.address
-    };
-};
+    }
+}
 
 //fungsi update user
 const update = async (req, res) => {
     try {
-        // Validasi request menggunakan skema validasi updateUserValidation
+        // Validasi data
         const validatedData = validate(updateUserValidation, req)
 
         // Destructuring data hasil validasi
@@ -112,21 +112,22 @@ const update = async (req, res) => {
         const [result] = await pool.query(
             'UPDATE user SET gender = ?, full_name = ?, password = ?, date_birth = ?, email = ?, phone = ?, address = ? WHERE id_username = ?',
             [gender, full_name, password, date_birth, email, phone, address, id_username] 
-        );
+        )
 
-        console.log(result);  // Tambahkan log hasil query
+        console.log(result) // Tambahkan log hasil query
 
         // Jika tidak ada data, user tidak ditemukan
         if (result.affectedRows === 0) {
             throw new ResponseError(404, 'User not found')
         }
 
+        //hasil
         return {result}
 
     } catch (error) {
-        // Tangani error (misal, error dari validasi atau query database)
-        console.error("Error: ", error.message);
-        throw new Error('internal server error');
+        // Error Handling lainnya
+        console.error("Error: ", error.message)
+        throw new Error('internal server error')
     }
 
     // return { result }
