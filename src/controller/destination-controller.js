@@ -18,10 +18,10 @@ const create = async(req, res, next)=>{
 
 const get = async(req, res, next)=>{
     try {
-        const namaCountry = req.params.country
-        const destinationId = req.params.destination
+        const countryId = req.params.id_country
+        const destinationId = req.params.id_destination
 
-        const result = await destinationService.get(namaCountry, destinationId)
+        const result = await destinationService.get(countryId, destinationId)
         res.status(200).json({
             data : result
         })
