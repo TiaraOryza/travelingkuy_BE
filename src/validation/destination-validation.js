@@ -2,6 +2,7 @@ import Joi from 'joi'
 
 const createDestinationValidation = Joi.object({
     id_destination : Joi.string().max(100).required(),
+    id_country : Joi.string().max(100).required(),
     destination_name : Joi.string().max(100).required(),
     price   : Joi.number().integer().required(),
     about_1 : Joi.string().max(100).required(),
