@@ -24,14 +24,4 @@ web.get('/ping', async (req, res) => {
     }
     })
 
-// web.get('/users/current', authMiddleware, async (req, res) => {
-//     try {
-//         const [rows] = await pool.query('SELECT 1 AS result');
-//         res.json({ message: 'Koneksi berhasil!', result: rows[0].result });
-//     } catch (error) {
-//         console.error('Database error:', error);
-//         res.status(500).json({ message: 'Database error', error: error.message });
-//     }
-// });
-
 export default web

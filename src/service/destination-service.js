@@ -1,131 +1,48 @@
-// import { prisma } from "../config/database.js"
-// import { ResponseError } from "../error/response-error.js"
-// import { createDestinationValidation, getDestinationVlidation, updateDestinationVlidation } from "../validation/destination-validation.js"
-// import { getKotaValidation } from "../validation/kota-validation.js"
-// import { validate } from "../validation/validation.js"
+import { pool } from "../config/database.js"
+import { ResponseError } from "../error/response-error.js"
+import { createDestinationValidation } from "../validation/destination-validation.js"
+import { getCountryValidation } from "../validation/country-validation.js"
+import { validate } from "../validation/validation.js"
 
-// const checkKotaExists = async (nm_kota)=>{
-//     nm_kota = validate(getKotaValidation, nm_kota)
+const checkCountryExists = async (id_country) => {
+    const validateCountry = validate(getCountryValidation, { id_country })
 
-//     const countKota = await prisma.kota.count({
-//         where :{
-//             nm_kota : nm_kota
-//         }
-//     })
+    console.log("id_country yang dikirim:", validateCountry.id_country);
 
-//     if(countKota !== 1){
-//         throw new ResponseError(404, 'kota is not found')
-//     }
+    const query = `SELECT COUNT(*) AS count FROM country WHERE id_country = ? `
 
-//     return nm_kota
- 
-// }
+    console.log("Query yang akan dijalankan:", query, [validateCountry.id_country]);
 
-// const create = async (nm_kota, req)=>{
-//     const destination = validate(createDestinationValidation, req)
-//     const namakota = await checkKotaExists(nm_kota)
-//     destination.nm_kota = namakota
-    
-//     return prisma.destination.create({
-//         data : destination,
-//         select :{
-//             id : true,
-//             nm_destination : true,
-//             about : true
-//         }
-//     })
-    
-// }
+    const [rows] = await pool.query(query, [validateCountry.id_country]);
 
-// const get = async(nm_kota ,destinationId)=>{
-//     destinationId = validate(getDestinationVlidation, destinationId)
-//     const namakota = await checkKotaExists(nm_kota)
-    
-//     const findDestination = await prisma.destination.findFirst({
-//         where :{
-//             id : destinationId,
-//             nm_kota : namakota
-//         },
-//         select :{
-//             id: true,
-//             nm_destination : true,
-//             about : true,
-//             hotel :{
-//                 select :{
-//                     nm_hotel : true,
-//                     about : true,
-//                     alamat : true,
-//                     price : true
-//                 }
-//             }
-//         }
-//     })
+    if (rows[0].count !== 1) {
+        throw new ResponseError(404, 'country is not found')
+    }
 
-//     if(!findDestination){
-//         throw new ResponseError(404, 'destination is not found')
-//     }
+    return validateCountry.id_country
+}
 
-//     return findDestination
+const create = async (id_country, req) => {
+    const destination = validate(createDestinationValidation, req)
+    const countryId = await checkCountryExists(id_country)
+    destination.id_country = countryId;
 
-    
-// }
+    const [result] = await pool.query(
+        `INSERT INTO destination (id_destination, destination_name, price, about_1, about_2, about_3, about_4) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        [destination.id_destination, destination.destination_name, destination.price, destination.about_1, destination.about_2, destination.about_3, destination.about_4]
+    )
 
-// const update = async (nm_kota ,req)=>{
-//     const destination = validate(updateDestinationVlidation, req)
-//     const namaKota = await checkKotaExists(nm_kota)
+    return {
+        id_destination: result.id_destination,
+        destination_name: destination.destination_name,
+        destination_price: destination.price,
+        destination_about_1: destination.about_1,
+        destination_about_2: destination.about_2,
+        destination_about_3: destination.about_3,
+        destination_about_4: destination.about_4
+    }
+}
 
-//     const countDestination = await prisma.destination.count({
-//         where :{
-//             id : destination.id,
-//             nm_kota : namaKota
-//         }
-//     })
-
-//     if(countDestination !== 1){
-//         throw new ResponseError(404, 'destination is not found')
-//     }
-
-//     return prisma.destination.update({
-//         where :{
-//             id :destination.id,
-//         },
-//         data :{
-//             nm_destination : destination.nm_destination,
-//             about : destination.about
-//         },
-//         select :{
-//             id : true,
-//             nm_destination : true,
-//             about : true
-//         }
-//     })
-// }
-
-// const remove = async(nm_kota, destinationId)=>{
-//     destinationId = validate(getDestinationVlidation, destinationId)
-//     const namaKota = await checkKotaExists(nm_kota)
-
-//     const countDestination = await prisma.destination.count({
-//         where :{
-//             id : destinationId,
-//             nm_kota : namaKota
-//         }
-//     })
-
-//     if(countDestination !== 1){
-//         throw new ResponseError(404, 'destination is not found')
-//     }
-
-//     return prisma.destination.delete({
-//         where:{
-//             id : destinationId
-//         }
-//     })
-// }
-
-// export default{
-//     create,
-//     get,
-//     update,
-//     remove
-// }
+export default {
+    create
+}
