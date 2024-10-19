@@ -32,13 +32,17 @@ const get = async(req, res, next)=>{
 
 const update = async (req, res, next)=>{
     try {
-        const namaCountry = req.params.country
-        const destinationId = req.params.destination
+        const countryId = req.params.id_country
+        const destinationId = req.params.id_destination
         const request = req.body
-        request.id = destinationId
 
-        const result = await destinationService.update(namaCountry, request)
+        console.log('request body:', request)
+
+        request.id_destination = destinationId
+
+        const result = await destinationService.update(countryId, request)
         res.status(200).json({
+            message : 'ini adalah data update',
             data : result
         })
     } catch (error) {
@@ -48,10 +52,10 @@ const update = async (req, res, next)=>{
 
 const remove = async(req, res, next)=>{
     try {
-        const namaCountry = req.params.country
-        const destinationId = req.params.destination
+        const countryId = req.params.id_country
+        const destinationId = req.params.id_destination
 
-        await destinationService.remove(namaCountry, destinationId)
+        await destinationService.remove(countryId, destinationId)
         res.status(200).json({
             data : 'ok'
         })

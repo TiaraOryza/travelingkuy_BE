@@ -22,7 +22,7 @@ publicRouter.delete('/country/:id_country', CountryController.remove)
 //api destination
 publicRouter.post('/country/:id_country/destination', destinationController.create)
 publicRouter.get('/country/:id_country/destination/:id_destination', destinationController.get)
-// publicRouter.put('/kota/:kota/destination/:destination', destinationController.update)
+publicRouter.put('/country/:id_country/destination/:id_destination', destinationController.update)
 // publicRouter.delete('/kota/:kota/destination/:destination', destinationController.remove)
 
 // //api hotel

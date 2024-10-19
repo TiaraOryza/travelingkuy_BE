@@ -24,7 +24,7 @@ const getDestinationVlidation =  Joi.object({
 
 const updateDestinationVlidation = Joi.object({
     id_destination : Joi.string().max(100).optional(),
-    id_country : Joi.string().max(100).optional(),
+    id_country : Joi.string().max(100).required(),
     destination_name : Joi.string().max(100).optional(),
     price   : Joi.number().integer().max(100).optional(),
     about_1 : Joi.string().max(100).optional(),

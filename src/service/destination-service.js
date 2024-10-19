@@ -1,7 +1,7 @@
 import { pool } from "../config/database.js"
 import { ResponseError } from "../error/response-error.js"
 import { createDestinationValidation, getDestinationVlidation } from "../validation/destination-validation.js"
-import { getCountryValidation } from "../validation/country-validation.js"
+import { getCountryValidation, updateCountryValidation } from "../validation/country-validation.js"
 import { validate } from "../validation/validation.js"
 
 const checkCountryExists = async (id_country) => {
@@ -58,7 +58,41 @@ const get = async (id_country, id_destination) => {
     return {result}
 }
 
+const update = async (id_country, req) => {
+    //console.log('Request data:', data);
+    console.log('Country ID:', id_country);
+     // Pisahkan id_destination sebelum validasi
+    const { id_destination: destinId, ...daraToValidate } = req;
+    console.log('Destin ID:', destinId);
+
+    const validatedDestin = validate(updateCountryValidation, daraToValidate)
+    console.log('validated data: ', validatedDestin)
+    
+    const countryId = await checkCountryExists(id_country)
+    validatedDestin.id_country = countryId
+
+    const { destination_name, price, about_1, about_2, about_3, about_4} = validatedDestin
+
+    const [result] = await pool.query(
+        `UPDATE destination 
+        SET id_country = ?, destination_name = ?, price = ?, about_1 = ?, about_2 = ?, about_3 = ?, about_4 = ? 
+        WHERE id_destination = ?`,
+        [countryId, destination_name, price, about_1, about_2, about_3, about_4, destinId]
+    )
+
+    console.log('hasil query : ', result)
+
+    if(result.affectedRows === 0){
+        throw new ResponseError(404, 'Destination not found')
+    }
+
+    return {result}
+}
+
+
 export default {
     create,
-    get
+    get,
+    update,
+    //remove
 }
